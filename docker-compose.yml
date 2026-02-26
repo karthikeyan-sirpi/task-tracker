@@ -1,0 +1,14 @@
+version: "3.9"
+
+services:
+  api:
+    build: .
+    container_name: fastapi_task
+    ports:
+      - "8000:8000"
+    volumes:
+      - task_data:/app/data
+    restart: always
+
+volumes:
+  task_data:
