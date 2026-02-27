@@ -1,18 +1,31 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Task Manager</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Flow | Minimal Manager</title>
     <link rel="stylesheet" href="/static/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <h1>Task Manager</h1>
 
-    <input id="title" placeholder="Title">
-    <input id="description" placeholder="Description">
-    <button onclick="addTask()">Add Task</button>
+    <div class="todo-card">
+        <h1>Task Flow</h1>
 
-    <h2>Tasks</h2>
-    <ul id="taskList"></ul>
+        <div class="input-container">
+            <input id="title" type="text" placeholder="Task title..." autocomplete="off">
+            <input id="description" type="text" placeholder="Add a description..." autocomplete="off">
+            <button class="btn-add" onclick="addTask()">Add Task</button>
+        </div>
+
+        <div class="list-header">
+            <h2>Your Tasks</h2>
+            <span id="task-count">0</span>
+        </div>
+        
+        <ul id="taskList">
+            </ul>
+    </div>
 
     <script src="/static/script.js"></script>
 </body>

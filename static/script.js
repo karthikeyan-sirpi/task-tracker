@@ -1,40 +1,65 @@
 async function loadTasks() {
-    const res = await fetch("/tasks");
-    const tasks = await res.json();
+    try {
+        const res = await fetch("/tasks");
+        const tasks = await res.json();
 
-    const list = document.getElementById("taskList");
-    list.innerHTML = "";
+        const list = document.getElementById("taskList");
+        const countSpan = document.getElementById("task-count");
+        
+        list.innerHTML = "";
+        countSpan.textContent = tasks.length;
 
-    tasks.forEach(task => {
-        const li = document.createElement("li");
-        li.textContent = task.title + " - " + task.description;
+        tasks.forEach(task => {
+            const li = document.createElement("li");
 
-        const btn = document.createElement("button");
-        btn.textContent = "Delete";
-        btn.onclick = async () => {
-            await fetch(`/tasks/${task.id}`, { method: "DELETE" });
-            loadTasks();
-        };
+            // Create a wrapper for text to stack title over description
+            li.innerHTML = `
+                <div class="task-info">
+                    <span class="task-title">${task.title}</span>
+                    <span class="task-desc">${task.description || 'No description'}</span>
+                </div>
+                <button class="btn-delete">Delete</button>
+            `;
 
-        li.appendChild(btn);
-        list.appendChild(li);
-    });
+            // Set up delete button logic
+            const deleteBtn = li.querySelector(".btn-delete");
+            deleteBtn.onclick = async () => {
+                li.style.opacity = "0.5"; // Visual feedback
+                await fetch(`/tasks/${task.id}`, { method: "DELETE" });
+                loadTasks();
+            };
+
+            list.appendChild(li);
+        });
+    } catch (err) {
+        console.error("Failed to load tasks:", err);
+    }
 }
 
 async function addTask() {
-    const title = document.getElementById("title").value;
-    const description = document.getElementById("description").value;
+    const titleInput = document.getElementById("title");
+    const descInput = document.getElementById("description");
+
+    if (!titleInput.value.trim()) {
+        alert("Please enter a task title!");
+        return;
+    }
+
+    const payload = { 
+        title: titleInput.value, 
+        description: descInput.value 
+    };
 
     await fetch("/tasks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, description })
+        body: JSON.stringify(payload)
     });
 
-    document.getElementById("title").value = "";
-    document.getElementById("description").value = "";
-
+    titleInput.value = "";
+    descInput.value = "";
     loadTasks();
 }
 
+// Initial load
 loadTasks();
