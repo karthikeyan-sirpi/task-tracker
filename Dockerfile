@@ -1,12 +1,23 @@
-FROM python:3.11-slim
+FROM python:3.11-slim AS builder
 
 WORKDIR /app
 
 COPY requirements.txt .
+RUN pip install -r --no-cache-dir requirements.txt
 
-RUN pip install -r requirements.txt
+FROM python:3.11-slim
+
+WORKDIR /app
+
+RUN adduser --disabled-password --no-create-home fastapiuser
+
+COPY --from-builder /install /usr/local
 
 COPY . .
+
+RUN chown -R appuser:appuser /app
+
+USER fastapiuser
 
 EXPOSE 8000
 
