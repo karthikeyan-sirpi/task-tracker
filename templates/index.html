@@ -1,32 +1,240 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task Flow | Minimal Manager</title>
-    <link rel="stylesheet" href="/static/styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modern Task Manager</title>
+
+<style>
+:root {
+    --primary: #6366f1;
+    --primary-hover: #4f46e5;
+    --danger: #ef4444;
+    --bg-dark: #0f172a;
+    --card-bg: #1e293b;
+    --input-bg: #334155;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+    --radius: 14px;
+}
+
+/* Reset */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Inter, system-ui, sans-serif;
+}
+
+body {
+    background: radial-gradient(circle at top left, #1e1e2f, var(--bg-dark));
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    color: var(--text-main);
+}
+
+/* Card */
+.todo-card {
+    background: var(--card-bg);
+    width: 100%;
+    max-width: 500px;
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    overflow: hidden;
+}
+
+/* Title */
+h1 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+    font-weight: 700;
+    background: linear-gradient(to right, #818cf8, #c084fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Input Area */
+.input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 1rem;
+}
+
+input {
+    flex: 1;
+    min-width: 0;
+    padding: 12px 16px;
+    border-radius: var(--radius);
+    border: 2px solid transparent;
+    background: var(--input-bg);
+    color: white;
+    font-size: 0.95rem;
+    outline: none;
+    transition: 0.2s ease;
+}
+
+input:focus {
+    border-color: var(--primary);
+    background: #3d4d63;
+}
+
+.btn-add {
+    background: var(--primary);
+    color: white;
+    padding: 0 18px;
+    border-radius: var(--radius);
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-add:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+}
+
+/* Task List */
+ul {
+    list-style: none;
+    margin-top: 1.5rem;
+    max-height: 320px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+/* Scrollbar */
+ul::-webkit-scrollbar {
+    width: 6px;
+}
+ul::-webkit-scrollbar-thumb {
+    background: #475569;
+    border-radius: 10px;
+}
+
+/* Task Item */
+li {
+    background: rgba(255, 255, 255, 0.04);
+    padding: 12px 16px;
+    margin-bottom: 10px;
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    animation: fadeIn 0.3s ease forwards;
+    transition: 0.2s ease;
+}
+
+li:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: scale(1.02);
+}
+
+/* Task Text */
+.task-text {
+    flex: 1;
+    min-width: 0;
+    word-break: break-word;
+    font-size: 0.95rem;
+}
+
+/* Delete Button */
+.btn-delete {
+    background: transparent;
+    color: var(--text-muted);
+    border: none;
+    cursor: pointer;
+    font-size: 0.85rem;
+    padding: 6px 10px;
+    border-radius: 8px;
+    transition: 0.2s;
+}
+
+.btn-delete:hover {
+    color: var(--danger);
+    background: rgba(239, 68, 68, 0.1);
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
 </head>
+
 <body>
 
-    <div class="todo-card">
-        <h1>Task Flow</h1>
+<div class="todo-card">
+    <h1>Task Manager</h1>
 
-        <div class="input-container">
-            <input id="title" type="text" placeholder="Task title..." autocomplete="off">
-            <input id="description" type="text" placeholder="Add a description..." autocomplete="off">
-            <button class="btn-add" onclick="addTask()">Add Task</button>
-        </div>
-
-        <div class="list-header">
-            <h2>Your Tasks</h2>
-            <span id="task-count">0</span>
-        </div>
-        
-        <ul id="taskList">
-            </ul>
+    <div class="input-group">
+        <input id="title" placeholder="Title">
+        <input id="description" placeholder="Description">
+        <button class="btn-add" onclick="addTask()">Add</button>
     </div>
 
-    <script src="/static/script.js"></script>
+    <ul id="taskList"></ul>
+</div>
+
+<script>
+async function loadTasks() {
+    const res = await fetch("/tasks");
+    const tasks = await res.json();
+
+    const list = document.getElementById("taskList");
+    list.innerHTML = "";
+
+    tasks.forEach(task => {
+        const li = document.createElement("li");
+
+        const text = document.createElement("div");
+        text.className = "task-text";
+        text.textContent = task.title + " - " + task.description;
+
+        const btn = document.createElement("button");
+        btn.className = "btn-delete";
+        btn.textContent = "Delete";
+
+        btn.onclick = async () => {
+            await fetch(`/tasks/${task.id}`, { method: "DELETE" });
+            loadTasks();
+        };
+
+        li.appendChild(text);
+        li.appendChild(btn);
+        list.appendChild(li);
+    });
+}
+
+async function addTask() {
+    const title = document.getElementById("title").value.trim();
+    const description = document.getElementById("description").value.trim();
+
+    if (!title || !description) return;
+
+    await fetch("/tasks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, description })
+    });
+
+    document.getElementById("title").value = "";
+    document.getElementById("description").value = "";
+
+    loadTasks();
+}
+
+loadTasks();
+</script>
+
 </body>
 </html>
