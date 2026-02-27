@@ -1,43 +1,48 @@
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI, Depends, Request, HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from typing import List
-from uuid import UUID
-from models import Task, TaskCreate
-from task_service import task_service
+from sqlalchemy.orm import Session
 
-app = FastAPI(title="Task Manager")
+import models
+import crud
+from database import engine, SessionLocal
+from schemas import TaskCreate, Task
 
-# Mount static folder
+models.Base.metadata.create_all(bind=engine)
+
+app = FastAPI()
+
 app.mount("/static", StaticFiles(directory="static"), name="static")
-
-# Templates
 templates = Jinja2Templates(directory="templates")
+
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
 @app.get("/", response_class=HTMLResponse)
 def homepage(request: Request):
-    return templates.TemplateResponse(
-        "index.html",
-        {"request": request}
-    )
+    return templates.TemplateResponse("index.html", {"request": request})
 
 
-@app.get("/tasks", response_model=List[Task])
-def list_tasks():
-    return task_service.get_all_tasks()
+@app.get("/tasks")
+def list_tasks(db: Session = Depends(get_db)):
+    return crud.get_tasks(db)
 
 
-@app.post("/tasks", response_model=Task)
-def create_task(task: TaskCreate):
-    return task_service.create_task(task)
+@app.post("/tasks")
+def create_task(task: TaskCreate, db: Session = Depends(get_db)):
+    return crud.create_task(db, task)
 
 
 @app.delete("/tasks/{task_id}")
-def delete_task(task_id: UUID):
-    task = task_service.get_task(task_id)
+def delete_task(task_id: int, db: Session = Depends(get_db)):
+    task = crud.delete_task(db, task_id)
     if not task:
-        raise HTTPException(status_code=404, detail="Task not found")
-    task_service.delete_task(task_id)
-    return {"message": "Task deleted"}
+        raise HTTPException(status_code=404, detail="Not found")
+    return {"message": "Deleted"}

@@ -1,15 +1,10 @@
-from pydantic import BaseModel
-from uuid import UUID
+from sqlalchemy import Column, Integer, String
+from database import Base
 
 
-class TaskBase(BaseModel):
-    title: str
-    description: str
+class Task(Base):
+    __tablename__ = "tasks"
 
-
-class TaskCreate(TaskBase):
-    pass
-
-
-class Task(TaskBase):
-    id: UUID
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String, nullable=False)
+    description = Column(String, nullable=False)

@@ -1,0 +1,107 @@
+/* Reset */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Background */
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #1e1e2f, #0f0f17);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 80px;
+    color: white;
+}
+
+/* Title */
+h1 {
+    font-size: 2.5rem;
+    margin-bottom: 30px;
+    letter-spacing: 1px;
+}
+
+/* Inputs */
+input {
+    width: 300px;
+    padding: 12px 15px;
+    margin: 8px 0;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+    background: #2a2a3d;
+    color: white;
+    transition: 0.2s;
+}
+
+input::placeholder {
+    color: #aaa;
+}
+
+input:focus {
+    background: #33334d;
+    box-shadow: 0 0 0 2px #4CAF50;
+}
+
+/* Add Button */
+button {
+    padding: 12px 20px;
+    margin-top: 10px;
+    border-radius: 10px;
+    border: none;
+    font-size: 1rem;
+    background: #4CAF50;
+    color: white;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+button:hover {
+    background: #45a049;
+    transform: translateY(-2px);
+}
+
+/* Tasks Section */
+h2 {
+    margin-top: 40px;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+/* Task List */
+ul {
+    list-style: none;
+    width: 350px;
+}
+
+/* Each Task */
+li {
+    background: #232336;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: 0.2s;
+}
+
+li:hover {
+    background: #2f2f48;
+}
+
+/* Delete Button */
+li button {
+    background: #e74c3c;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+li button:hover {
+    background: #c0392b;
+}
