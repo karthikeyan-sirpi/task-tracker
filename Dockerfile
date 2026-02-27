@@ -3,7 +3,7 @@ FROM python:3.11-slim AS builder
 WORKDIR /app
 
 COPY requirements.txt .
-RUN pip install -r --no-cache-dir --prefix=/install requirements.txt
+RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
 
 FROM python:3.11-slim
 
@@ -15,7 +15,7 @@ COPY --from=builder /install /usr/local
 
 COPY . .
 
-RUN chown -R appuser:appuser /app
+RUN chown -R fastapiuser:fastapiuser /app
 
 USER fastapiuser
 
