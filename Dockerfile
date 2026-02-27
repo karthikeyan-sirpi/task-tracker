@@ -11,7 +11,7 @@ WORKDIR /app
 
 RUN adduser --disabled-password --no-create-home fastapiuser
 
-COPY --from-builder /install /usr/local
+COPY --from=builder /install /usr/local
 
 COPY . .
 
