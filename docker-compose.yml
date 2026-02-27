@@ -23,7 +23,7 @@ services:
     networks:
       - db_task
     ports:
-      - "80:8000"   # better for production
+      - "8000:8000"   # better for production
 
 volumes:
   postgres_data:
