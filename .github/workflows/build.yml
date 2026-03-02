@@ -2,7 +2,7 @@ name: Build, Scan & Deploy
 
 on:
   push:
-    branches: ["main"]
+    branches: ["master"]
 
 jobs:
   build-scan-deploy:
